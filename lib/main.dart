@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'expenses.dart';
+import 'list_tile.dart';
 import 'answers.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -11,11 +11,17 @@ int randomNumberInRange(int min, int max) {
 }
 
 int number = randomNumberInRange(1, 2);
+bool endOfGame = false;
+bool textFieldEnabled = true;
 
-int startGame(List<Answer> ans) {
-  int number = randomNumberInRange(1, 100);
-  ans.clear();
-  return number;
+int resetGameState(List<Answer> ans) {
+  setState() {
+    ans.clear();
+    endOfGame = false;
+    listView(answers: ans);
+  }
+
+  return randomNumberInRange(1, 100);
 }
 
 void main() {
@@ -31,7 +37,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: false,
       ),
       home: MyHomePage(),
@@ -48,14 +54,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _numberController = TextEditingController();
-  final List<Expense> expenses = [
-    Expense(id: '1', title: 'Kino', cost: 65.23, date: DateTime.now()),
-    Expense(id: '2', title: 'Bilard', cost: 86.23, date: DateTime.now()),
-    Expense(id: '3', title: 'Bilard', cost: 286.23, date: DateTime.now()),
-  ];
 
   List<Answer> answers = <Answer>[];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,10 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
                     controller: _numberController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Your guess',
-                    ),
+                    decoration: const InputDecoration(border: OutlineInputBorder(), labelText: 'Your guess'),
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   ),
                 ),
@@ -95,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         desc = "Too few";
                       } else {
                         desc = "BINGO";
-                        number = startGame(answers);
+                        endOfGame = true;
                       }
                       setState(() {
                         answers.add(Answer(
@@ -107,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                       _numberController.clear();
                     },
-                    child: Text('Take a guess'),
+                    child: Text('Take a guess ${_numberController.text}'),
                   ),
                 ),
               ],
@@ -120,46 +117,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: const Text('Wykres'),
               ),
             ),
-            ...answers.map((e) {
-              return Card(
-                child: Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.blue,
-                          width: 2,
-                        ),
-                      ),
-                      padding: EdgeInsets.all(10),
-                      child: Text(
-                        '${e.number}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ),
-                    Column(
-                      // ignore: prefer_const_literals_to_create_immutables
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(2.0),
-                          child: Text(
-                            DateFormat('yyyy-MM-dd').format(e.date),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(2.0),
-                          child: Text(e.description),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              );
-            })
+            if (endOfGame) ...{
+              ElevatedButton(
+                onPressed: () => {number = resetGameState(answers)},
+                child: Text("Restart game"),
+              )
+            },
+            listView(answers: answers),
+            // ...answers.map((e) {
+            //   return listTile();
+            // })
           ],
         ));
   }
