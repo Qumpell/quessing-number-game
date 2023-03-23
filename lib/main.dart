@@ -15,12 +15,8 @@ bool endOfGame = false;
 bool textFieldEnabled = true;
 
 int resetGameState(List<Answer> ans) {
-  setState() {
-    ans.clear();
-    endOfGame = false;
-    listView(answers: ans);
-  }
-
+  ans.clear();
+  endOfGame = false;
   return randomNumberInRange(1, 100);
 }
 
@@ -66,49 +62,53 @@ class _MyHomePageState extends State<MyHomePage> {
           // mainAxisAlignment: MainAxisAlignment.end,
           // crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Card(
-                child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: _numberController,
-                    decoration: const InputDecoration(border: OutlineInputBorder(), labelText: 'Your guess'),
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            if (!endOfGame) ...{
+              Card(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: _numberController,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Your guess'),
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      print('Add');
-                      print(_numberController.text);
-                      String desc;
-                      int numberGiven = int.parse(_numberController.text);
-                      if (number < numberGiven) {
-                        desc = "Too much";
-                      } else if (number > numberGiven) {
-                        desc = "Too few";
-                      } else {
-                        desc = "BINGO";
-                        endOfGame = true;
-                      }
-                      setState(() {
-                        answers.add(Answer(
-                          number: _numberController.text,
-                          description: desc,
-                          date: DateTime.now(),
-                        ));
-                      });
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      child: Text('Take a guess ${_numberController.text}'),
+                      onPressed: () {
+                        print('Add');
+                        print(_numberController.text);
+                        String desc;
+                        int numberGiven = int.parse(_numberController.text);
+                        if (number < numberGiven) {
+                          desc = "Too much";
+                        } else if (number > numberGiven) {
+                          desc = "Too few";
+                        } else {
+                          desc = "BINGO";
+                          endOfGame = true;
+                        }
+                        setState(() {
+                          answers.add(Answer(
+                            number: _numberController.text,
+                            description: desc,
+                            date: DateTime.now(),
+                          ));
+                        });
 
-                      _numberController.clear();
-                    },
-                    child: Text('Take a guess ${_numberController.text}'),
+                        _numberController.clear();
+                      },
+                    ),
                   ),
-                ),
-              ],
-            )),
+                ],
+              )),
+            },
             Card(
               elevation: 6,
               child: Container(
@@ -119,12 +119,18 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             if (endOfGame) ...{
               ElevatedButton(
-                onPressed: () => {number = resetGameState(answers)},
+                onPressed: () {
+                  setState(() {
+                    number = resetGameState(answers);
+                  });
+                  //listView(answers: answers);
+                },
                 child: Text("Restart game"),
               )
             },
-            listView(answers: answers),
+            listView(answers: answers.reversed.toList()),
             // ...answers.map((e) {
+
             //   return listTile();
             // })
           ],
