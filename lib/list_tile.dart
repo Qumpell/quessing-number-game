@@ -6,13 +6,13 @@ class listView extends StatefulWidget {
   listView({super.key, required this.answers});
 
   @override
-  State<listView> createState() => _listViewState();
+  State<listView> createState() => _ListViewState();
 }
 
-class _listViewState extends State<listView> {
+class _ListViewState extends State<listView> {
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return Flexible(
       child: ListView.builder(
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
@@ -22,14 +22,24 @@ class _listViewState extends State<listView> {
             return Card(
               child: Padding(
                 padding: EdgeInsets.all(10),
-                child: ListTile(
-                  title: Text(
-                    widget.answers[index].number,
-                    style: TextStyle(
-                      fontSize: 20,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(border: Border.all(color: const Color.fromARGB(100, 44, 66, 200))),
+                  child: ListTile(
+                    title: Text(
+                      widget.answers[index].number,
+                      style: const TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.normal,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
+                    trailing: Text(widget.answers[index].description,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.normal,
+                          fontSize: 25,
+                        ),
+                        textAlign: TextAlign.center),
                   ),
-                  trailing: Text(widget.answers[index].description),
                 ),
               ),
             );

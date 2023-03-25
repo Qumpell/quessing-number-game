@@ -10,7 +10,7 @@ int randomNumberInRange(int min, int max) {
   return min + Random().nextInt(max - min);
 }
 
-int number = randomNumberInRange(1, 2);
+int number = randomNumberInRange(1, 100);
 bool endOfGame = false;
 bool textFieldEnabled = true;
 
@@ -56,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Flutter Demo Home Page'),
+          title: const Text('Guess number game'),
         ),
         body: Column(
           // mainAxisAlignment: MainAxisAlignment.end,
@@ -71,38 +71,38 @@ class _MyHomePageState extends State<MyHomePage> {
                     padding: const EdgeInsets.all(8.0),
                     child: TextField(
                       controller: _numberController,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Your guess'),
+                      decoration: const InputDecoration(border: OutlineInputBorder(), labelText: 'Your guess'),
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(
-                      child: Text('Take a guess ${_numberController.text}'),
+                      child: Text('Take a guess'),
                       onPressed: () {
-                        print('Add');
-                        print(_numberController.text);
-                        String desc;
-                        int numberGiven = int.parse(_numberController.text);
-                        if (number < numberGiven) {
-                          desc = "Too much";
-                        } else if (number > numberGiven) {
-                          desc = "Too few";
-                        } else {
-                          desc = "BINGO";
-                          endOfGame = true;
-                        }
-                        setState(() {
-                          answers.add(Answer(
-                            number: _numberController.text,
-                            description: desc,
-                            date: DateTime.now(),
-                          ));
-                        });
+                        if (_numberController.text.isNotEmpty) {
+                          print('Add');
+                          print(_numberController.text);
+                          String desc;
+                          int numberGiven = int.parse(_numberController.text);
+                          if (number < numberGiven) {
+                            desc = "Too much";
+                          } else if (number > numberGiven) {
+                            desc = "Too few";
+                          } else {
+                            desc = "BINGO";
+                            endOfGame = true;
+                          }
+                          setState(() {
+                            answers.add(Answer(
+                              number: _numberController.text,
+                              description: desc,
+                              date: DateTime.now(),
+                            ));
+                          });
 
-                        _numberController.clear();
+                          _numberController.clear();
+                        }
                       },
                     ),
                   ),
@@ -112,10 +112,13 @@ class _MyHomePageState extends State<MyHomePage> {
             Card(
               elevation: 6,
               child: Container(
-                color: Colors.yellow,
-                width: double.infinity,
-                child: const Text('Wykres'),
-              ),
+                  color: Colors.blueAccent,
+                  width: double.infinity,
+                  child: const Text(
+                    'Answers',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 25),
+                    textAlign: TextAlign.center,
+                  )),
             ),
             if (endOfGame) ...{
               ElevatedButton(
